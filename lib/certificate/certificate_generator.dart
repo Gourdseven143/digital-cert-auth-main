@@ -49,3 +49,5 @@ class CertificateGenerator {
 MIICWwIBAAKBgQDEkY4nYLu9N+aC...
 -----END RSA PRIVATE KEY-----''';
 }
+
+//generate certificate and sign
