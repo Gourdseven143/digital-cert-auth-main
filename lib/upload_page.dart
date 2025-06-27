@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:pdf_text/pdf_text.dart'; // 确保这行存在
+import 'package:pdf_text/pdf_text.dart'; // ✅ 使用 pdf_text
 
 class UploadPage extends StatefulWidget {
   const UploadPage({super.key});
@@ -39,16 +39,15 @@ class _UploadPageState extends State<UploadPage> {
         final fileSize = await file.length();
         final fileType = result.files.single.extension ?? 'unknown';
 
-        // 提取元数据
         final metadata = await _extractMetadata(file, fileType);
-        
+
         setState(() {
           _selectedFile = file;
           _fileName = fileName;
           _fileSize = fileSize;
           _fileType = fileType;
           _extractedMetadata = metadata;
-          _downloadURL = null; // 重置下载URL
+          _downloadURL = null;
         });
       }
     } catch (e) {
@@ -60,7 +59,6 @@ class _UploadPageState extends State<UploadPage> {
     }
   }
 
-  // 元数据提取方法（使用pdf_text）
   Future<Map<String, dynamic>> _extractMetadata(File file, String fileType) async {
     final metadata = <String, dynamic>{
       'file_type': fileType,
@@ -70,48 +68,47 @@ class _UploadPageState extends State<UploadPage> {
 
     try {
       if (fileType == 'pdf') {
-        // PDF文本提取
+        // 使用 pdf_text 提取文本
         final pdfDoc = await PDFDoc.fromFile(file);
         final text = await pdfDoc.text;
         metadata['page_count'] = pdfDoc.length;
         metadata['detected_content'] = _analyzePdfText(text);
       } else if (['jpg', 'png', 'jpeg'].contains(fileType)) {
-        // 图片元数据（实际项目中可用ML Kit OCR）
         metadata['detected_content'] = ['图像文件 - OCR功能需额外实现'];
       }
     } catch (e) {
       metadata['error'] = '元数据提取失败: $e';
     }
-    
+
     return metadata;
   }
 
   List<String> _analyzePdfText(String text) {
     final results = <String>[];
-    
-    // 检测证书编号
+
     final certIdRegex = RegExp(r'[A-Z]{2,3}-\d{4,6}');
     final certIdMatches = certIdRegex.allMatches(text);
     if (certIdMatches.isNotEmpty) {
       results.add('证书编号: ${certIdMatches.first.group(0)}');
     }
-    
-    // 检测日期
+
     final dateRegex = RegExp(r'\d{4}-\d{2}-\d{2}');
     final dateMatches = dateRegex.allMatches(text);
     if (dateMatches.isNotEmpty) {
       results.add('颁发日期: ${dateMatches.first.group(0)}');
     }
-    
-    // 检测机构名称
-    const orgKeywords = ['University', 'Institute', 'College', 'Organization', 'Certification', '机构', '学院', '大学', '证书'];
+
+    const orgKeywords = [
+      'University', 'Institute', 'College', 'Organization', 'Certification',
+      '机构', '学院', '大学', '证书'
+    ];
     for (final keyword in orgKeywords) {
       if (text.contains(keyword)) {
         results.add('颁发机构: $keyword');
         break;
       }
     }
-    
+
     return results.isNotEmpty ? results : ['未检测到关键信息'];
   }
 
@@ -126,14 +123,13 @@ class _UploadPageState extends State<UploadPage> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) throw Exception('用户未登录，请先登录');
-      
+
       final storageRef = FirebaseStorage.instance
           .ref()
           .child('true_copy/${user.uid}/${DateTime.now().millisecondsSinceEpoch}_$_fileName');
 
-      // 添加上传进度监听
       final uploadTask = storageRef.putFile(_selectedFile!);
-      
+
       uploadTask.snapshotEvents.listen((taskSnapshot) {
         if (mounted) {
           setState(() {
@@ -141,11 +137,10 @@ class _UploadPageState extends State<UploadPage> {
           });
         }
       });
-      
+
       await uploadTask;
       final downloadURL = await storageRef.getDownloadURL();
 
-      // 存储到Firestore
       await FirebaseFirestore.instance.collection('true_copies').add({
         'file_name': _fileName,
         'file_size': _fileSize,
@@ -153,8 +148,8 @@ class _UploadPageState extends State<UploadPage> {
         'uploaded_at': Timestamp.now(),
         'download_url': downloadURL,
         'user_id': user.uid,
-        'status': 'pending', // 审批状态
-        'metadata': _extractedMetadata, // 提取的元数据
+        'status': 'pending',
+        'metadata': _extractedMetadata,
       });
 
       if (mounted) {
@@ -189,24 +184,24 @@ class _UploadPageState extends State<UploadPage> {
       appBar: AppBar(
         title: const Text('真实副本上传'),
         actions: [
-          if (_downloadURL != null) IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: () async {
-              await Clipboard.setData(ClipboardData(text: _downloadURL!));
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('下载链接已复制到剪贴板')),
-                );
-              }
-            },
-          ),
+          if (_downloadURL != null)
+            IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: () async {
+                await Clipboard.setData(ClipboardData(text: _downloadURL!));
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('下载链接已复制到剪贴板')),
+                  );
+                }
+              },
+            ),
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            // 文件选择区域
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -228,8 +223,6 @@ class _UploadPageState extends State<UploadPage> {
                 ),
               ),
             ),
-            
-            // 元数据展示区域
             if (_extractedMetadata.isNotEmpty)
               Card(
                 child: Padding(
@@ -239,19 +232,17 @@ class _UploadPageState extends State<UploadPage> {
                     children: [
                       const Text('提取的元数据:', style: TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(height: 10),
-                      ..._extractedMetadata['detected_content'].map<Widget>((item) => 
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: Text('• $item'),
-                        )).toList(),
+                      ..._extractedMetadata['detected_content'].map<Widget>((item) =>
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Text('• $item'),
+                          )).toList(),
                       if (_extractedMetadata.containsKey('page_count'))
                         _buildInfoRow('总页数:', _extractedMetadata['page_count'].toString()),
                     ],
                   ),
                 ),
               ),
-            
-            // 上传按钮区域
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
               child: Column(
@@ -279,8 +270,6 @@ class _UploadPageState extends State<UploadPage> {
                 ],
               ),
             ),
-            
-            // 下载链接区域
             if (_downloadURL != null)
               Card(
                 color: Colors.green[50],

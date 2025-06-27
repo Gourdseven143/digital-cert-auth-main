@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:open_file/open_file.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:file_picker/file_picker.dart';
@@ -149,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                     final tempDir = await getTemporaryDirectory();
                     final file = File('${tempDir.path}/certificate.pdf');
                     await file.writeAsBytes(pdfBytes);
-                    await OpenFile.open(file.path);
+                    await OpenFilex.open(file.path);
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('生成失败: $e')),
