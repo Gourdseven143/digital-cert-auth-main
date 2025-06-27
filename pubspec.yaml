@@ -1,27 +1,37 @@
-name: digital_cert_repo
-description: "A new Flutter project."
-publish_to: 'none'
-version: 1.0.0+1
+name: digital_cert_auth
+description: "Digital Certificate Repository"
 
 environment:
-  sdk: ^3.7.2
+  sdk: ">=3.7.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-
   cupertino_icons: ^1.0.8
-
-  # ✅ 加上这些 Firebase 相关依赖
-  firebase_core: ^2.30.0
-  firebase_auth: ^4.18.0
-  cloud_firestore: ^4.16.0
-  google_sign_in: ^6.2.1
+  firebase_core: ^2.32.0
+  firebase_auth: ^4.20.0
+  cloud_firestore: ^4.17.5
+  firebase_storage: ^11.7.7
+  google_sign_in: ^6.3.0
+  file_picker: ^6.1.1  # 锁定此版本避免平台错误
+  open_file: ^3.5.4    # 锁定此版本避免macos错误
+  path_provider: ^2.1.2
+  encrypt: ^5.0.3
+  uuid: ^4.3.3
+  pdf: ^3.10.7
+  #pdf_text: ^0.5.0
+  url_launcher: ^6.1.11
+  intl: ^0.18.1          # 日期格式化
+  pdf_render: ^1.4.7     # PDF预览
+  photo_view: ^0.14.0
+  # 移除有问题的 pointycastle 改用 encrypt
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^2.0.3
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/

@@ -4,7 +4,7 @@ import 'package:uuid/uuid.dart';
 class ShareService {
   static Future<String> createSecureShare(String userId, String certId) async {
     final token = const Uuid().v4().substring(0, 6); // 6-digit token
-    final expiresAt = DateTime.now().add(Duration(hours: 24)); // Expires in 24h
+    final expiresAt = DateTime.now().add(const Duration(hours: 24)); // Expires in 24h
 
     final docId = const Uuid().v4();
     await FirebaseFirestore.instance.collection('shared_certs').doc(docId).set({

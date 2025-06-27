@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "11956057899",
-    "project_id": "digital-cert-repo",
-    "storage_bucket": "digital-cert-repo.firebasestorage.app"
+    "project_number": "736325916174",
+    "project_id": "true-copy-e9b9f",
+    "storage_bucket": "true-copy-e9b9f.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:11956057899:android:14b85ba260e71ef504776e",
+        "mobilesdk_app_id": "1:736325916174:android:dd8383d5903d282b500e5f",
         "android_client_info": {
-          "package_name": "com.a1.digital_cert_repo"
+          "package_name": "com.example.digital_cert_repo"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCsXh6XcJUPqZx_nMhO8mTGvMcAhMlgnq4"
+          "current_key": "AIzaSyC2o64sAZ7lFgEQScGI_uJf8eO3PWO1_PM"
         }
       ],
       "services": {

@@ -17,9 +17,9 @@ class _TokenVerificationPageState extends State<TokenVerificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Enter Access Token')),
+      appBar: AppBar(title: const Text('Enter Access Token')),
       body: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             TextField(
@@ -29,7 +29,7 @@ class _TokenVerificationPageState extends State<TokenVerificationPage> {
                 errorText: error,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 final success = await ShareService.verifyToken(widget.docId, tokenController.text.trim());
@@ -50,7 +50,7 @@ class _TokenVerificationPageState extends State<TokenVerificationPage> {
                   });
                 }
               },
-              child: Text('Verify'),
+              child: const Text('Verify'),
             ),
           ],
         ),

@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:encrypt/encrypt.dart';
@@ -19,7 +17,7 @@ class CertificateGenerator {
       build: (context) => pw.Center(
         child: pw.Column(
           children: [
-            pw.Text('Certificate of Achievement', style: pw.TextStyle(fontSize: 24)),
+            pw.Text('Certificate of Achievement', style: const pw.TextStyle(fontSize: 24)),
             pw.SizedBox(height: 30),
             pw.Text('This certifies that'),
             pw.Text(cert.fullName, style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)),
@@ -27,7 +25,7 @@ class CertificateGenerator {
             pw.SizedBox(height: 20),
             pw.Text('Issued by ${cert.issuer} on ${cert.issueDate.toLocal()}'),
             pw.SizedBox(height: 20),
-            pw.Text('Signature: ${cert.signature.substring(0, 20)}...', style: pw.TextStyle(fontSize: 10))
+            pw.Text('Signature: ${cert.signature.substring(0, 20)}...', style: const pw.TextStyle(fontSize: 10))
           ],
         ),
       ),

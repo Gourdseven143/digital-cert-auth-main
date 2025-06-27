@@ -3,7 +3,6 @@ import 'package:uuid/uuid.dart';
 import 'certificate_model.dart';
 import 'certificate_generator.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
 
 
 Future<void> issueCertificate(String userId, String fullName, String courseTitle) async {

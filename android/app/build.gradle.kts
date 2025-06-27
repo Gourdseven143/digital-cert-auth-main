@@ -8,10 +8,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.digital_cert_repo"
+    namespace 'com.yourcompany.digital_cert_auth'
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
-
+    ndkVersion = "27.0.12077973"
+    dependencies {
+        // 添加 multidex 支持
+        implementation 'androidx.multidex:multidex:2.0.1'
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -23,7 +26,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.digital_cert_repo"
+        applicationId = "com.example.digital_cert_auth"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
