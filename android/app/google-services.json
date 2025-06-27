@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "375814842455",
+    "project_id": "certification-38198",
+    "storage_bucket": "certification-38198.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:375814842455:android:fd6435d93a1916e8581b12",
+        "android_client_info": {
+          "package_name": "com.example.digital_cert_auth_fixed"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhGMkYLRSVn7eQcxdUWSNAfU1D-bNW02E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
