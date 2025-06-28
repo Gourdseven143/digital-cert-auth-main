@@ -53,7 +53,7 @@ class _UploadPageState extends State<UploadPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('文件选择错误: $e')),
+          SnackBar(content: Text('Failed selecting role: $e')),
         );
       }
     }
@@ -69,14 +69,14 @@ class _UploadPageState extends State<UploadPage> {
 
     try {
       if (fileType == 'pdf') {
-        metadata['detected_content'] = ['PDF文件 (未启用文本提取)'];
+        metadata['detected_content'] = ['PDF file (Does not enable file getting)'];
       } else if (['jpg', 'png', 'jpeg'].contains(fileType)) {
-        metadata['detected_content'] = ['图像文件 (OCR功能未启用)'];
+        metadata['detected_content'] = ['Image file (OCR function does not enable)'];
       } else {
-        metadata['detected_content'] = ['未知文件类型'];
+        metadata['detected_content'] = ['Unknown file type'];
       }
     } catch (e) {
-      metadata['error'] = '元数据提取失败: $e';
+      metadata['error'] = 'Failed getting Metadata : $e';
     }
 
     return metadata;
@@ -92,7 +92,7 @@ class _UploadPageState extends State<UploadPage> {
 
     try {
       final user = FirebaseAuth.instance.currentUser;
-      if (user == null) throw Exception('用户未登录，请先登录');
+      if (user == null) throw Exception('Please login first');
 
       final storageRef = FirebaseStorage.instance
           .ref()
@@ -130,13 +130,13 @@ class _UploadPageState extends State<UploadPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('上传成功! 等待管理员审批')),
+          const SnackBar(content: Text('Upload success! Wait for Admin approval')),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('上传失败: $e')),
+          SnackBar(content: Text('Failed upload: $e')),
         );
       }
     } finally {
@@ -152,7 +152,7 @@ class _UploadPageState extends State<UploadPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('真实副本上传'),
+        title: const Text('True copy upload'),
         actions: [
           if (_downloadURL != null)
             IconButton(
@@ -161,7 +161,7 @@ class _UploadPageState extends State<UploadPage> {
                 await Clipboard.setData(ClipboardData(text: _downloadURL!));
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('下载链接已复制到剪贴板')),
+                    const SnackBar(content: Text('Download link copied to clipboard')),
                   );
                 }
               },
@@ -180,15 +180,15 @@ class _UploadPageState extends State<UploadPage> {
                     ElevatedButton.icon(
                       onPressed: pickFile,
                       icon: const Icon(Icons.upload_file),
-                      label: const Text('选择文件'),
+                      label: const Text('Select File'),
                     ),
                     const SizedBox(height: 20),
                     if (_fileName != null) ...[
-                      _buildInfoRow('文件名称:', _fileName!),
-                      _buildInfoRow('文件大小:', '${(_fileSize! / 1024).toStringAsFixed(2)} KB'),
-                      _buildInfoRow('文件类型:', _fileType!),
+                      _buildInfoRow('File name:', _fileName!),
+                      _buildInfoRow('File size:', '${(_fileSize! / 1024).toStringAsFixed(2)} KB'),
+                      _buildInfoRow('File Type:', _fileType!),
                     ] else
-                      const Text('未选择文件', style: TextStyle(color: Colors.grey)),
+                      const Text('No file selected', style: TextStyle(color: Colors.grey)),
                   ],
                 ),
               ),
@@ -200,7 +200,7 @@ class _UploadPageState extends State<UploadPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('提取的元数据:', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text('Extracted metadata:', style: TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(height: 10),
                       ..._extractedMetadata['detected_content'].map<Widget>((item) =>
                           Padding(
@@ -230,10 +230,10 @@ class _UploadPageState extends State<UploadPage> {
                             children: [
                               CircularProgressIndicator(color: Colors.white),
                               SizedBox(width: 10),
-                              Text('上传中...'),
+                              Text('Uploading...'),
                             ],
                           )
-                        : const Text('上传文件', style: TextStyle(fontSize: 18)),
+                        : const Text('Upload files', style: TextStyle(fontSize: 18)),
                   ),
                 ],
               ),
@@ -246,13 +246,13 @@ class _UploadPageState extends State<UploadPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('上传成功!', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+                      const Text('Upload Successfully!', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
                       const SizedBox(height: 10),
-                      const Text('下载链接:'),
+                      const Text('Download Link:'),
                       const SizedBox(height: 5),
                       SelectableText(_downloadURL!, style: const TextStyle(fontSize: 14)),
                       const SizedBox(height: 10),
-                      const Text('状态: 等待管理员审批', style: TextStyle(color: Colors.orange)),
+                      const Text('Status: Waiting for administrator approval', style: TextStyle(color: Colors.orange)),
                     ],
                   ),
                 ),

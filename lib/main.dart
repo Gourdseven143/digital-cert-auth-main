@@ -4,22 +4,23 @@ import 'login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); // Ensure Firebase is initialized
-  runApp(const MyApp());
+  await Firebase.initializeApp();
+  runApp(const CertificateApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class CertificateApp extends StatelessWidget {
+  const CertificateApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Digital Certificate Repository',
+      title: 'Certificate Management System',
       theme: ThemeData(
-        primarySwatch: Colors.indigo,
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: const LoginPage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
-

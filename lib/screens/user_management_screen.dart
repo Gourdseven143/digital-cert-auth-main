@@ -1,157 +1,75 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class UserManagementScreen extends StatefulWidget {
-  const UserManagementScreen({super.key});
+import '../ca_home_page.dart';
 
-  @override
-  State<UserManagementScreen> createState() => _UserManagementScreenState();
-}
+import '../recipient_home_page.dart';
 
-class _UserManagementScreenState extends State<UserManagementScreen> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
+class RoleSelectionPage extends StatelessWidget {
+  final User user;
+
+  const RoleSelectionPage({Key? key, required this.user}) : super(key: key);
+
+  void setRole(BuildContext context, String role) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .set({'email': user.email, 'role': role});
+
+    if (role == 'CA') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const CAHomePage()),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const RecipientHomePage()),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('用户管理'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () => showSearchDialog(context),
-          ),
-        ],
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _firestore.collection('users').snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('没有用户数据'));
-          }
-          
-          var users = snapshot.data!.docs;
-          
-          // 应用搜索过滤
-          if (_searchQuery.isNotEmpty) {
-            users = users.where((user) {
-              final data = user.data() as Map<String, dynamic>;
-              final email = data['email']?.toString().toLowerCase() ?? '';
-              final name = data['displayName']?.toString().toLowerCase() ?? '';
-              return email.contains(_searchQuery.toLowerCase()) || 
-                     name.contains(_searchQuery.toLowerCase());
-            }).toList();
-          }
-          
-          return ListView.builder(
-            itemCount: users.length,
-            itemBuilder: (context, index) {
-              final userDoc = users[index];
-              final userData = userDoc.data() as Map<String, dynamic>;
-              
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: Colors.blueGrey,
-                  child: Text(userData['displayName']?.toString().substring(0,1) ?? 'U'),
-                ),
-                title: Text(userData['displayName'] ?? '未命名用户'),
-                subtitle: Text(userData['email'] ?? '无邮箱'),
-                trailing: Switch(
-                  value: userData['isActive'] ?? true,
-                  onChanged: (value) => _toggleUserStatus(userDoc.id, value),
-                ),
-                onTap: () => _showUserDetails(userData),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-  
-  void showSearchDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('搜索用户'),
-        content: TextField(
-          controller: _searchController,
-          decoration: const InputDecoration(
-            hintText: '输入邮箱或姓名',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                _searchQuery = _searchController.text;
-              });
-              Navigator.pop(context);
-            },
-            child: const Text('搜索'),
-          ),
-        ],
-      ),
-    );
-  }
-  
-  Future<void> _toggleUserStatus(String userId, bool isActive) async {
-    await _firestore.collection('users').doc(userId).update({
-      'isActive': isActive,
-      'lastUpdated': FieldValue.serverTimestamp(),
-    });
-  }
-  
-  void _showUserDetails(Map<String, dynamic> userData) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(userData['displayName'] ?? '用户详情'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+      appBar: AppBar(title: const Text('Select Role')),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildDetailItem('用户ID', userData['uid']),
-            _buildDetailItem('邮箱', userData['email']),
-            _buildDetailItem('状态', userData['isActive'] == true ? '激活' : '禁用'),
-            _buildDetailItem('注册时间', 
-              (userData['createdAt'] as Timestamp).toDate().toString()),
+            const Text(
+              'Please select your role:',
+              style: TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => setRole(context, 'CA'),
+              child: const Text('Certificate Authority (CA)'),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () => setRole(context, 'Recipient'),
+              child: const Text('Recipient'),
+            ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('关闭'),
-          ),
-        ],
       ),
     );
   }
-  
-  Widget _buildDetailItem(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 80,
-            child: Text(
-              '$label:',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(child: Text(value)),
-        ],
+}
+
+// ✅ 新增这个类
+class UserManagementScreen extends StatelessWidget {
+  const UserManagementScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('用户管理')),
+      body: const Center(
+        child: Text('这里是用户管理页面'),
       ),
     );
   }
